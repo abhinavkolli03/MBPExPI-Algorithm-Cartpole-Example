@@ -18,19 +18,34 @@ import numpy as np
 
 # Global Functions
 def global_make_policy(name, ob_space, ac_space, policy, policy_initializer, learnable_variance, variance_init):
+    if policy == 'linear':
+        hid_size = []
+        num_hid_layers = 0
+        use_bias = False
+    elif policy == 'simple-nn':
+        hid_size = [16]
+        num_hid_layers = 1
+        use_bias = True
+    elif policy == 'nn':
+        hid_size = [100, 50, 25]
+        num_hid_layers = 3
+        use_bias = True
+    else:
+        raise Exception('Unrecognized policy type.')
+
     if policy == 'linear' or policy == 'nn' or policy == 'simple-nn':
         return MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
-                         hid_size=[100, 50, 25], num_hid_layers=3, gaussian_fixed_var=True,
-                         use_bias=True, use_critic=False, hidden_W_init=policy_initializer,
-                         output_W_init=policy_initializer, learnable_variance=learnable_variance,
-                         variance_initializer=variance_init)
+                         hid_size=hid_size, num_hid_layers=num_hid_layers,
+                         gaussian_fixed_var=True, use_bias=use_bias, use_critic=False,
+                         hidden_W_init=policy_initializer, output_W_init=policy_initializer,
+                         learnable_variance=learnable_variance, variance_initializer=variance_init)
     elif policy == 'cnn':
         return CnnPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
                          gaussian_fixed_var=True, use_bias=False, use_critic=False,
-                         hidden_W_init=policy_initializer,
-                         output_W_init=policy_initializer)
+                         hidden_W_init=policy_initializer, output_W_init=policy_initializer)
     else:
         raise Exception('Unrecognized policy type.')
+
 
 def global_make_env(env):
     if env.startswith('rllab.'):
@@ -99,7 +114,7 @@ def train(env, policy, policy_init, n_episodes, horizon, seed, save_weights=0,
                 ob, reward, done, _ = env_instance.step(action)
                 total_reward += reward
                 steps += 1
-                final_state = ob  # Update final state at each step
+                final_state = ob
                 if done:
                     break
 

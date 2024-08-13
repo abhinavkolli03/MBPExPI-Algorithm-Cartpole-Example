@@ -6,7 +6,7 @@ cloudpickle==1.6.0
 future==1.0.0
 gast==0.6.0
 grpcio==1.62.3
-gym==0.17.3
+gym==0.26.2
 gym-notices==0.0.8
 h5py==3.8.0
 importlib-metadata==6.7.0
